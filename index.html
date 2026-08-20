@@ -11,207 +11,326 @@
 
     <title>OrderCleaner</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
+
 
 <body>
 
 <div class="container">
 
-    <h1>OrderCleaner</h1>
+    <header class="main-header">
 
-    <p class="subtitle">
-        Simple order management for small businesses.
-    </p>
+        <h1>OrderCleaner</h1>
+
+        <p>
+            Turn messy customer orders into organized orders.
+        </p>
+
+    </header>
 
 
-    <!-- ===================== -->
-    <!-- SIGN UP + LOGIN -->
-    <!-- ===================== -->
+    <!-- ================================= -->
+    <!-- AUTH SECTION -->
+    <!-- ================================= -->
 
     <section id="authSection">
 
-        <h2>Create Account</h2>
+        <div class="auth-grid">
 
-        <form id="signupForm">
+            <div class="card">
 
-            <label>Email</label>
+                <h2>Create Account</h2>
 
-            <input
-                type="email"
-                id="signupEmail"
-                required
-            >
+                <form id="signupForm">
 
-            <label>Password</label>
+                    <label>Email</label>
 
-            <input
-                type="password"
-                id="signupPassword"
-                minlength="6"
-                required
-            >
-
-            <button type="submit">
-                Sign Up
-            </button>
-
-        </form>
+                    <input
+                        type="email"
+                        id="signupEmail"
+                        required
+                    >
 
 
-        <h2>Login</h2>
+                    <label>Password</label>
 
-        <form id="loginForm">
-
-            <label>Email</label>
-
-            <input
-                type="email"
-                id="loginEmail"
-                required
-            >
-
-            <label>Password</label>
-
-            <input
-                type="password"
-                id="loginPassword"
-                required
-            >
-
-            <button type="submit">
-                Login
-            </button>
-
-        </form>
+                    <input
+                        type="password"
+                        id="signupPassword"
+                        minlength="6"
+                        required
+                    >
 
 
-        <p id="authMessage"></p>
+                    <button type="submit">
+                        Sign Up
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <div class="card">
+
+                <h2>Login</h2>
+
+                <form id="loginForm">
+
+                    <label>Email</label>
+
+                    <input
+                        type="email"
+                        id="loginEmail"
+                        required
+                    >
+
+
+                    <label>Password</label>
+
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        required
+                    >
+
+
+                    <button type="submit">
+                        Login
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <p
+            id="authMessage"
+            class="message"
+        ></p>
 
     </section>
 
 
-    <!-- ===================== -->
-    <!-- ORDER APP -->
-    <!-- ===================== -->
+
+    <!-- ================================= -->
+    <!-- MAIN APPLICATION -->
+    <!-- ================================= -->
 
     <section
         id="appSection"
         style="display: none;"
     >
 
-        <p>
-            Logged in as:
-            <strong id="loggedInEmail"></strong>
-        </p>
 
-        <button id="logoutButton">
-            Logout
-        </button>
+        <!-- USER BAR -->
 
+        <div class="user-bar">
 
-        <h2 id="formTitle">
-            Add New Order
-        </h2>
+            <span>
 
+                Logged in as:
 
-        <form id="orderForm">
+                <strong id="loggedInEmail"></strong>
 
-            <label>Customer Name</label>
-
-            <input
-                type="text"
-                id="customer"
-                required
-            >
-
-
-            <label>Product</label>
-
-            <input
-                type="text"
-                id="product"
-                required
-            >
-
-
-            <label>Quantity</label>
-
-            <input
-                type="number"
-                id="quantity"
-                min="1"
-                required
-            >
-
-
-            <label>Price</label>
-
-            <input
-                type="number"
-                id="price"
-                min="0"
-                step="0.01"
-                required
-            >
-
-
-            <label>Delivery Date</label>
-
-            <input
-                type="date"
-                id="deliveryDate"
-            >
-
-
-            <label>Status</label>
-
-            <select id="status">
-
-                <option value="New">New</option>
-
-                <option value="Processing">
-                    Processing
-                </option>
-
-                <option value="Paid">
-                    Paid
-                </option>
-
-                <option value="Delivered">
-                    Delivered
-                </option>
-
-            </select>
+            </span>
 
 
             <button
-                type="submit"
-                id="saveButton"
+                id="logoutButton"
+                class="secondary-button"
             >
-                Save Order
+                Logout
             </button>
+
+        </div>
+
+
+
+        <!-- ================================= -->
+        <!-- SMART ORDER PASTE -->
+        <!-- ================================= -->
+
+        <div class="card smart-card">
+
+            <h2>Smart Order Paste</h2>
+
+            <p class="help-text">
+                Paste a customer order message and OrderCleaner
+                will try to fill the form automatically.
+            </p>
+
+
+            <textarea
+                id="orderMessageInput"
+                rows="7"
+                placeholder="Example:
+
+John Smith
+2 Black T-Shirt
+$25
+delivery 25/08/2026"
+            ></textarea>
 
 
             <button
                 type="button"
-                id="cancelEditButton"
-                style="display: none;"
+                id="parseOrderButton"
             >
-                Cancel Edit
+                Parse Order
             </button>
 
-        </form>
+
+            <p
+                id="parseMessage"
+                class="message"
+            ></p>
+
+        </div>
 
 
-        <p id="orderMessage"></p>
 
+        <!-- ================================= -->
+        <!-- ORDER FORM -->
+        <!-- ================================= -->
+
+        <div class="card">
+
+            <h2 id="formTitle">
+                Add New Order
+            </h2>
+
+
+            <form id="orderForm">
+
+                <label>
+                    Customer Name
+                </label>
+
+                <input
+                    type="text"
+                    id="customer"
+                    required
+                >
+
+
+                <label>
+                    Product
+                </label>
+
+                <input
+                    type="text"
+                    id="product"
+                    required
+                >
+
+
+                <label>
+                    Quantity
+                </label>
+
+                <input
+                    type="number"
+                    id="quantity"
+                    min="1"
+                    required
+                >
+
+
+                <label>
+                    Price
+                </label>
+
+                <input
+                    type="number"
+                    id="price"
+                    min="0"
+                    step="0.01"
+                    required
+                >
+
+
+                <label>
+                    Delivery Date
+                </label>
+
+                <input
+                    type="date"
+                    id="deliveryDate"
+                >
+
+
+                <label>
+                    Status
+                </label>
+
+                <select id="status">
+
+                    <option value="New">
+                        New
+                    </option>
+
+                    <option value="Processing">
+                        Processing
+                    </option>
+
+                    <option value="Paid">
+                        Paid
+                    </option>
+
+                    <option value="Delivered">
+                        Delivered
+                    </option>
+
+                </select>
+
+
+                <button
+                    type="submit"
+                    id="saveButton"
+                >
+                    Save Order
+                </button>
+
+
+                <button
+                    type="button"
+                    id="cancelEditButton"
+                    class="secondary-button"
+                    style="display: none;"
+                >
+                    Cancel Edit
+                </button>
+
+            </form>
+
+
+            <p
+                id="orderMessage"
+                class="message"
+            ></p>
+
+        </div>
+
+
+
+        <!-- ================================= -->
+        <!-- DASHBOARD -->
+        <!-- ================================= -->
 
         <div class="dashboard">
 
-            <div>
+            <div class="summary-card">
 
-                <h3>Total Orders</h3>
+                <h3>
+                    Total Orders
+                </h3>
 
                 <p id="totalOrders">
                     0
@@ -220,9 +339,11 @@
             </div>
 
 
-            <div>
+            <div class="summary-card">
 
-                <h3>Total Revenue</h3>
+                <h3>
+                    Total Revenue
+                </h3>
 
                 <p id="totalRevenue">
                     $0.00
@@ -233,84 +354,106 @@
         </div>
 
 
-        <h2>Orders</h2>
+
+        <!-- ================================= -->
+        <!-- ORDERS -->
+        <!-- ================================= -->
+
+        <div class="orders-section">
+
+            <h2>Orders</h2>
 
 
-        <input
-            type="text"
-            id="searchInput"
-            placeholder="Search customer or product..."
-        >
+            <div class="controls">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search customer or product..."
+                >
 
 
-        <select id="statusFilter">
+                <select id="statusFilter">
 
-            <option value="All">
-                All Statuses
-            </option>
+                    <option value="All">
+                        All Statuses
+                    </option>
 
-            <option value="New">
-                New
-            </option>
+                    <option value="New">
+                        New
+                    </option>
 
-            <option value="Processing">
-                Processing
-            </option>
+                    <option value="Processing">
+                        Processing
+                    </option>
 
-            <option value="Paid">
-                Paid
-            </option>
+                    <option value="Paid">
+                        Paid
+                    </option>
 
-            <option value="Delivered">
-                Delivered
-            </option>
+                    <option value="Delivered">
+                        Delivered
+                    </option>
 
-        </select>
+                </select>
 
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>Customer</th>
-
-                    <th>Product</th>
-
-                    <th>Qty</th>
-
-                    <th>Price</th>
-
-                    <th>Total</th>
-
-                    <th>Delivery</th>
-
-                    <th>Status</th>
-
-                    <th>Action</th>
-
-                </tr>
-
-            </thead>
+            </div>
 
 
-            <tbody id="orderTableBody"></tbody>
+            <div class="table-wrapper">
 
-        </table>
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Customer</th>
+
+                            <th>Product</th>
+
+                            <th>Qty</th>
+
+                            <th>Price</th>
+
+                            <th>Total</th>
+
+                            <th>Delivery</th>
+
+                            <th>Status</th>
+
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="orderTableBody">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
 
     </section>
 
 </div>
 
 
-<!-- Supabase library -->
+
+<!-- SUPABASE LIBRARY -->
+
 <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
 ></script>
 
 
-<!-- Our JavaScript -->
+<!-- OUR JAVASCRIPT -->
+
 <script src="app.js"></script>
 
 </body>
