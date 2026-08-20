@@ -3,7 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>OrderCleaner</title>
 
@@ -12,50 +16,186 @@
 
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <h1>OrderCleaner</h1>
+    <h1>OrderCleaner</h1>
 
-        <p class="subtitle">
-            Simple order management for small businesses.
+    <p class="subtitle">
+        Simple order management for small businesses.
+    </p>
+
+
+    <!-- ===================== -->
+    <!-- SIGN UP + LOGIN -->
+    <!-- ===================== -->
+
+    <section id="authSection">
+
+        <h2>Create Account</h2>
+
+        <form id="signupForm">
+
+            <label>Email</label>
+
+            <input
+                type="email"
+                id="signupEmail"
+                required
+            >
+
+            <label>Password</label>
+
+            <input
+                type="password"
+                id="signupPassword"
+                minlength="6"
+                required
+            >
+
+            <button type="submit">
+                Sign Up
+            </button>
+
+        </form>
+
+
+        <h2>Login</h2>
+
+        <form id="loginForm">
+
+            <label>Email</label>
+
+            <input
+                type="email"
+                id="loginEmail"
+                required
+            >
+
+            <label>Password</label>
+
+            <input
+                type="password"
+                id="loginPassword"
+                required
+            >
+
+            <button type="submit">
+                Login
+            </button>
+
+        </form>
+
+
+        <p id="authMessage"></p>
+
+    </section>
+
+
+    <!-- ===================== -->
+    <!-- ORDER APP -->
+    <!-- ===================== -->
+
+    <section
+        id="appSection"
+        style="display: none;"
+    >
+
+        <p>
+            Logged in as:
+            <strong id="loggedInEmail"></strong>
         </p>
 
-        <h2 id="formTitle">Add New Order</h2>
+        <button id="logoutButton">
+            Logout
+        </button>
+
+
+        <h2 id="formTitle">
+            Add New Order
+        </h2>
+
 
         <form id="orderForm">
 
             <label>Customer Name</label>
-            <input type="text" id="customer" required>
+
+            <input
+                type="text"
+                id="customer"
+                required
+            >
+
 
             <label>Product</label>
-            <input type="text" id="product" required>
+
+            <input
+                type="text"
+                id="product"
+                required
+            >
+
 
             <label>Quantity</label>
-            <input type="number" id="quantity" min="1" required>
+
+            <input
+                type="number"
+                id="quantity"
+                min="1"
+                required
+            >
+
 
             <label>Price</label>
-            <input type="number" id="price" min="0" step="0.01" required>
+
+            <input
+                type="number"
+                id="price"
+                min="0"
+                step="0.01"
+                required
+            >
+
 
             <label>Delivery Date</label>
-            <input type="date" id="deliveryDate">
+
+            <input
+                type="date"
+                id="deliveryDate"
+            >
+
 
             <label>Status</label>
 
             <select id="status">
+
                 <option value="New">New</option>
-                <option value="Processing">Processing</option>
-                <option value="Paid">Paid</option>
-                <option value="Delivered">Delivered</option>
+
+                <option value="Processing">
+                    Processing
+                </option>
+
+                <option value="Paid">
+                    Paid
+                </option>
+
+                <option value="Delivered">
+                    Delivered
+                </option>
+
             </select>
 
-            <button type="submit" id="saveButton">
+
+            <button
+                type="submit"
+                id="saveButton"
+            >
                 Save Order
             </button>
+
 
             <button
                 type="button"
                 id="cancelEditButton"
-                class="cancel-button"
                 style="display: none;"
             >
                 Cancel Edit
@@ -64,16 +204,30 @@
         </form>
 
 
+        <p id="orderMessage"></p>
+
+
         <div class="dashboard">
 
-            <div class="summary-card">
+            <div>
+
                 <h3>Total Orders</h3>
-                <p id="totalOrders">0</p>
+
+                <p id="totalOrders">
+                    0
+                </p>
+
             </div>
 
-            <div class="summary-card">
+
+            <div>
+
                 <h3>Total Revenue</h3>
-                <p id="totalRevenue">$0.00</p>
+
+                <p id="totalRevenue">
+                    $0.00
+                </p>
+
             </div>
 
         </div>
@@ -82,55 +236,82 @@
         <h2>Orders</h2>
 
 
-        <div class="controls">
-
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Search customer or product..."
-            >
-
-            <select id="statusFilter">
-
-                <option value="All">All Statuses</option>
-                <option value="New">New</option>
-                <option value="Processing">Processing</option>
-                <option value="Paid">Paid</option>
-                <option value="Delivered">Delivered</option>
-
-            </select>
-
-        </div>
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search customer or product..."
+        >
 
 
-        <div class="table-wrapper">
+        <select id="statusFilter">
 
-            <table>
+            <option value="All">
+                All Statuses
+            </option>
 
-                <thead>
+            <option value="New">
+                New
+            </option>
 
-                    <tr>
-                        <th>Customer</th>
-                        <th>Product</th>
-                        <th>Qty</th>
-                        <th>Price</th>
-                        <th>Total</th>
-                        <th>Delivery</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
+            <option value="Processing">
+                Processing
+            </option>
 
-                </thead>
+            <option value="Paid">
+                Paid
+            </option>
 
-                <tbody id="orderTableBody"></tbody>
+            <option value="Delivered">
+                Delivered
+            </option>
 
-            </table>
+        </select>
 
-        </div>
 
-    </div>
+        <table>
 
-    <script src="app.js"></script>
+            <thead>
+
+                <tr>
+
+                    <th>Customer</th>
+
+                    <th>Product</th>
+
+                    <th>Qty</th>
+
+                    <th>Price</th>
+
+                    <th>Total</th>
+
+                    <th>Delivery</th>
+
+                    <th>Status</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="orderTableBody"></tbody>
+
+        </table>
+
+    </section>
+
+</div>
+
+
+<!-- Supabase library -->
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<!-- Our JavaScript -->
+<script src="app.js"></script>
 
 </body>
 
