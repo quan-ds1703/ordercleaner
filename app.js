@@ -1,3 +1,47 @@
+// ==========================================
+// SUPABASE CONFIG
+// ==========================================
+
+const SUPABASE_URL =
+    "https://jtyezjbaijtrlcytcwss.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_z_Yck3uKIdbXFwcspskCMg_0QebwUVO";
+
+
+// Kết nối Supabase
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+// ==========================================
+// 2. LẤY CÁC THÀNH PHẦN HTML
+// ==========================================
+
+const authSection =
+    document.getElementById("authSection");
+
+const appSection =
+    document.getElementById("appSection");
+
+const signupForm =
+    document.getElementById("signupForm");
+
+const loginForm =
+    document.getElementById("loginForm");
+
+const logoutButton =
+    document.getElementById("logoutButton");
+
+const authMessage =
+    document.getElementById("authMessage");
+
+const loggedInEmail =
+    document.getElementById("loggedInEmail");
+
 const form =
     document.getElementById("orderForm");
 
@@ -25,57 +69,337 @@ const saveButton =
 const cancelEditButton =
     document.getElementById("cancelEditButton");
 
-
-// Load saved orders
-let orders =
-    JSON.parse(localStorage.getItem("orders")) || [];
+const orderMessage =
+    document.getElementById("orderMessage");
 
 
-// -1 means we are NOT editing
-let editingIndex = -1;
+// ==========================================
+// 3. VARIABLES
+// ==========================================
+
+let currentUser = null;
+
+let orders = [];
+
+let editingId = null;
 
 
-// Save orders
-function saveOrders() {
+// ==========================================
+// 4. SIGN UP
+// ==========================================
 
-    localStorage.setItem(
-        "orders",
-        JSON.stringify(orders)
-    );
+signupForm.addEventListener(
+    "submit",
+    async function(event) {
 
+        event.preventDefault();
+
+        const email =
+            document.getElementById("signupEmail").value;
+
+        const password =
+            document.getElementById("signupPassword").value;
+
+        authMessage.textContent =
+            "Creating account...";
+
+
+        const { data, error } =
+            await supabaseClient.auth.signUp({
+
+                email: email,
+
+                password: password
+
+            });
+
+
+        if (error) {
+
+            authMessage.textContent =
+                "Error: " + error.message;
+
+            return;
+
+        }
+
+
+        if (data.session) {
+
+            authMessage.textContent =
+                "Account created successfully.";
+
+        } else {
+
+            authMessage.textContent =
+                "Account created. Check your email.";
+
+        }
+
+
+        signupForm.reset();
+    }
+);
+
+
+// ==========================================
+// 5. LOGIN
+// ==========================================
+
+loginForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const email =
+            document.getElementById("loginEmail").value;
+
+        const password =
+            document.getElementById("loginPassword").value;
+
+
+        authMessage.textContent =
+            "Logging in...";
+
+
+        const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+
+                email: email,
+
+                password: password
+
+            });
+
+
+        if (error) {
+
+            authMessage.textContent =
+                "Login error: " + error.message;
+
+            return;
+
+        }
+
+
+        currentUser =
+            data.user;
+
+
+        authMessage.textContent =
+            "";
+
+
+        loginForm.reset();
+
+
+        await showApp();
+    }
+);
+
+
+// ==========================================
+// 6. LOGOUT
+// ==========================================
+
+logoutButton.addEventListener(
+    "click",
+    async function() {
+
+        await supabaseClient.auth.signOut();
+
+        currentUser = null;
+
+        orders = [];
+
+        showLogin();
+    }
+);
+
+
+// ==========================================
+// 7. SHOW LOGIN
+// ==========================================
+
+function showLogin() {
+
+    authSection.style.display =
+        "block";
+
+    appSection.style.display =
+        "none";
 }
 
 
-// Update dashboard
-function updateSummary() {
+// ==========================================
+// 8. SHOW APP
+// ==========================================
 
-    totalOrders.textContent =
-        orders.length;
+async function showApp() {
 
+    authSection.style.display =
+        "none";
 
-    let revenue = 0;
+    appSection.style.display =
+        "block";
 
+    loggedInEmail.textContent =
+        currentUser.email;
 
-    orders.forEach(function(order) {
-
-        revenue +=
-            Number(order.quantity)
-            *
-            Number(order.price);
-
-    });
-
-
-    totalRevenue.textContent =
-        "$" + revenue.toFixed(2);
-
+    await loadOrders();
 }
 
 
-// Display orders
+// ==========================================
+// 9. LOAD ORDERS
+// ==========================================
+
+async function loadOrders() {
+
+    const { data, error } =
+        await supabaseClient
+            .from("orders")
+            .select("*")
+            .order(
+                "created_at",
+                { ascending: false }
+            );
+
+
+    if (error) {
+
+        orderMessage.textContent =
+            "Error loading orders: "
+            + error.message;
+
+        return;
+    }
+
+
+    orders = data || [];
+
+    orderMessage.textContent = "";
+
+    displayOrders();
+}
+
+
+// ==========================================
+// 10. SAVE / UPDATE ORDER
+// ==========================================
+
+form.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const customer =
+            document.getElementById("customer").value;
+
+        const product =
+            document.getElementById("product").value;
+
+        const quantity =
+            Number(
+                document.getElementById("quantity").value
+            );
+
+        const price =
+            Number(
+                document.getElementById("price").value
+            );
+
+        const deliveryDate =
+            document.getElementById("deliveryDate").value;
+
+        const status =
+            document.getElementById("status").value;
+
+
+        const orderData = {
+
+            user_id:
+                currentUser.id,
+
+            customer:
+                customer,
+
+            product:
+                product,
+
+            quantity:
+                quantity,
+
+            price:
+                price,
+
+            delivery_date:
+                deliveryDate || null,
+
+            status:
+                status
+
+        };
+
+
+        // ADD
+        if (editingId === null) {
+
+            const { error } =
+                await supabaseClient
+                    .from("orders")
+                    .insert(orderData);
+
+
+            if (error) {
+
+                orderMessage.textContent =
+                    "Error: " + error.message;
+
+                return;
+            }
+
+        }
+
+        // UPDATE
+        else {
+
+            const { error } =
+                await supabaseClient
+                    .from("orders")
+                    .update(orderData)
+                    .eq("id", editingId);
+
+
+            if (error) {
+
+                orderMessage.textContent =
+                    "Error: " + error.message;
+
+                return;
+            }
+        }
+
+
+        resetForm();
+
+        await loadOrders();
+    }
+);
+
+
+// ==========================================
+// 11. DISPLAY ORDERS
+// ==========================================
+
 function displayOrders() {
 
-    orderTableBody.innerHTML = "";
+    orderTableBody.innerHTML =
+        "";
 
 
     const searchText =
@@ -88,7 +412,6 @@ function displayOrders() {
 
     const filteredOrders =
         orders.filter(function(order) {
-
 
             const matchesSearch =
 
@@ -113,16 +436,10 @@ function displayOrders() {
 
 
             return matchesSearch && matchesStatus;
-
         });
 
 
     filteredOrders.forEach(function(order) {
-
-
-        const originalIndex =
-            orders.indexOf(order);
-
 
         const row =
             document.createElement("tr");
@@ -151,7 +468,7 @@ function displayOrders() {
             </td>
 
             <td>
-                ${order.deliveryDate || "-"}
+                ${order.delivery_date || "-"}
             </td>
 
             <td>
@@ -162,108 +479,47 @@ function displayOrders() {
 
                 <button
                     class="edit-button"
-                    onclick="editOrder(${originalIndex})"
+                    onclick="editOrder(${order.id})"
                 >
                     Edit
                 </button>
 
                 <button
                     class="delete-button"
-                    onclick="deleteOrder(${originalIndex})"
+                    onclick="deleteOrder(${order.id})"
                 >
                     Delete
                 </button>
 
             </td>
-
         `;
 
 
         orderTableBody.appendChild(row);
-
     });
 
 
     updateSummary();
-
 }
 
 
-// Save or update order
-form.addEventListener(
-    "submit",
-    function(event) {
+// ==========================================
+// 12. EDIT
+// ==========================================
 
-        event.preventDefault();
-
-
-        const customer =
-            document.getElementById("customer").value;
-
-        const product =
-            document.getElementById("product").value;
-
-        const quantity =
-            document.getElementById("quantity").value;
-
-        const price =
-            document.getElementById("price").value;
-
-        const deliveryDate =
-            document.getElementById("deliveryDate").value;
-
-        const status =
-            document.getElementById("status").value;
-
-
-        const orderData = {
-
-            customer: customer,
-
-            product: product,
-
-            quantity: quantity,
-
-            price: price,
-
-            deliveryDate: deliveryDate,
-
-            status: status
-
-        };
-
-
-        // ADD NEW ORDER
-        if (editingIndex === -1) {
-
-            orders.push(orderData);
-
-        }
-
-        // UPDATE EXISTING ORDER
-        else {
-
-            orders[editingIndex] =
-                orderData;
-
-        }
-
-
-        saveOrders();
-
-        displayOrders();
-
-        resetForm();
-
-    }
-);
-
-
-// Edit order
-function editOrder(index) {
+function editOrder(id) {
 
     const order =
-        orders[index];
+        orders.find(function(item) {
+
+            return item.id === id;
+
+        });
+
+
+    if (!order) {
+        return;
+    }
 
 
     document.getElementById("customer").value =
@@ -279,13 +535,14 @@ function editOrder(index) {
         order.price;
 
     document.getElementById("deliveryDate").value =
-        order.deliveryDate || "";
+        order.delivery_date || "";
 
     document.getElementById("status").value =
         order.status || "New";
 
 
-    editingIndex = index;
+    editingId =
+        id;
 
 
     formTitle.textContent =
@@ -302,72 +559,139 @@ function editOrder(index) {
         top: 0,
         behavior: "smooth"
     });
-
 }
 
 
-// Delete order
-function deleteOrder(index) {
+// ==========================================
+// 13. DELETE
+// ==========================================
 
-    orders.splice(index, 1);
+async function deleteOrder(id) {
 
-    saveOrders();
+    const confirmed =
+        confirm(
+            "Delete this order?"
+        );
 
-    displayOrders();
 
-
-    if (editingIndex === index) {
-
-        resetForm();
-
+    if (!confirmed) {
+        return;
     }
 
+
+    const { error } =
+        await supabaseClient
+            .from("orders")
+            .delete()
+            .eq("id", id);
+
+
+    if (error) {
+
+        orderMessage.textContent =
+            "Delete error: "
+            + error.message;
+
+        return;
+    }
+
+
+    await loadOrders();
 }
 
 
-// Reset form
+// ==========================================
+// 14. DASHBOARD
+// ==========================================
+
+function updateSummary() {
+
+    totalOrders.textContent =
+        orders.length;
+
+
+    let revenue = 0;
+
+
+    orders.forEach(function(order) {
+
+        revenue +=
+            Number(order.quantity)
+            *
+            Number(order.price);
+
+    });
+
+
+    totalRevenue.textContent =
+        "$" + revenue.toFixed(2);
+}
+
+
+// ==========================================
+// 15. RESET FORM
+// ==========================================
+
 function resetForm() {
 
     form.reset();
 
-
-    editingIndex = -1;
-
+    editingId =
+        null;
 
     formTitle.textContent =
         "Add New Order";
 
-
     saveButton.textContent =
         "Save Order";
 
-
     cancelEditButton.style.display =
         "none";
-
 }
 
 
-// Cancel editing
 cancelEditButton.addEventListener(
     "click",
     resetForm
 );
 
 
-// Search
 searchInput.addEventListener(
     "input",
     displayOrders
 );
 
 
-// Filter
 statusFilter.addEventListener(
     "change",
     displayOrders
 );
 
 
-// First display
-displayOrders();
+// ==========================================
+// 16. CHECK USER WHEN WEBSITE OPENS
+// ==========================================
+
+async function checkSession() {
+
+    const {
+        data: { session }
+    } =
+        await supabaseClient.auth.getSession();
+
+
+    if (session && session.user) {
+
+        currentUser =
+            session.user;
+
+        await showApp();
+
+    } else {
+
+        showLogin();
+    }
+}
+
+
+checkSession();
